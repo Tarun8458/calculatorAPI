@@ -6,30 +6,73 @@ from django.http import JsonResponse
 class CalcController(APIView):
 
     def get(self, request):
+
+        evaluatable = True
+
         value1 = request.GET['value1']
         value2 = request.GET['value2']
         operation = request.GET['operation']
         if(operation == " "):
             operation = "+"
+
+        if(operation != "/"):
+            try:
+                value = eval(value1 + operation + value2)
+                response = {
+                 "Output" : value
+                }
+                res_obj = JsonResponse(response)
             
-        value = eval(value1 + operation + value2)
+            except:
+                evaluatable = False
 
-        response = {
-            "Output" : value
-        }
 
-        return JsonResponse(response)
+            if not evaluatable:
+                response = {
+                    "Output" : "Provided values are not evaluatable."
+                }
+                res_obj = JsonResponse(response, status = 400)
+
+        else:
+            response = {
+                "Output" : "According to test constraints, you are not allowed to perform a division operation in this API."
+            }
+            res_obj = JsonResponse(response, status = 400)
+
+        return res_obj
 
     def post(self, request):
-        data = request.data
-        value1 = data["value1"]
-        value2 = data["value2"]
-        operation = data["operation"]
 
-        value = eval(str(value1) + operation + str(value2))
+        evaluatable = True
 
-        response = {
-            "Output" : value
-        } 
+        value1 = request.GET.get("value1")
+        value2 = request.GET.get("value2")
+        operation = request.GET.get("operation")
+        if(operation == " "):
+            operation = "+"
 
-        return JsonResponse(response)
+        if(operation != "/"):
+            try:
+                value = eval(value1 + operation + value2)
+                response = {
+                 "Output" : value
+                }
+                res_obj = JsonResponse(response)
+            
+            except:
+                evaluatable = False
+
+
+            if not evaluatable:
+                response = {
+                    "Output" : "Provided values are not evaluatable."
+                }
+                res_obj = JsonResponse(response, status = 400)
+
+        else:
+            response = {
+                "Output" : "According to test constraints, you are not allowed to perform a division operation in this API."
+            }
+            res_obj = JsonResponse(response, status = 400)
+
+        return res_obj
